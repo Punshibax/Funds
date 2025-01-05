@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Payment Upload</title>
+  <title>User Upload</title>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
-      color: #333;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -30,6 +29,7 @@
       font-size: 24px;
       margin-bottom: 20px;
       color: #4CAF50;
+      text-align: center;
     }
 
     .form-group {
@@ -66,30 +66,23 @@
     .message {
       font-weight: bold;
       margin-top: 10px;
-      opacity: 0;
-      transform: translateY(-20px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-
-    .message.show {
-      opacity: 1;
-      transform: translateY(0);
+      color: green;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>Upload Your Payment Details</h1>
+    <h1>Upload Payment Screenshot</h1>
 
     <div class="form-group">
-      <label for="userName">Enter Your Name:</label>
-      <input type="text" id="userName" placeholder="Enter your name">
+      <label for="name">Name:</label>
+      <input type="text" id="name" placeholder="Enter your name">
     </div>
 
     <div class="form-group">
-      <label for="paymentScreenshot">Upload Your Payment Screenshot:</label>
-      <input type="file" id="paymentScreenshot" accept="image/*">
+      <label for="screenshot">Payment Screenshot:</label>
+      <input type="file" id="screenshot" accept="image/*">
     </div>
 
     <button id="uploadButton" class="btn">Upload</button>
@@ -98,39 +91,41 @@
 
   <script>
     document.getElementById("uploadButton").addEventListener("click", function() {
-      const userName = document.getElementById("userName").value;
-      const paymentScreenshot = document.getElementById("paymentScreenshot").files[0];
+      const name = document.getElementById("name").value;
+      const screenshotFile = document.getElementById("screenshot").files[0];
+      const messageDiv = document.getElementById("message");
 
-      if (!userName || !paymentScreenshot) {
-        document.getElementById("message").textContent = "Please provide both your name and payment screenshot.";
-        document.getElementById("message").classList.add("show");
+      if (!name || !screenshotFile) {
+        messageDiv.textContent = "Please enter your name and upload a screenshot.";
+        messageDiv.style.color = "red";
         return;
       }
 
-      // Convert the screenshot to base64 to store in localStorage (for demo purposes)
       const reader = new FileReader();
-      reader.onload = function(event) {
-        const screenshotDataUrl = event.target.result;
 
-        // Store the user data in localStorage
-        const users = JSON.parse(localStorage.getItem("users")) || [];
-        users.push({
-          name: userName,
-          screenshot: screenshotDataUrl
-        });
+      reader.onload = function(e) {
+        const screenshotData = e.target.result;
 
+        // Store the uploaded name and screenshot in localStorage
+        const userData = {
+          name: name,
+          screenshot: screenshotData
+        };
+
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        users.push(userData);
         localStorage.setItem("users", JSON.stringify(users));
 
-        // Show success message
-        document.getElementById("message").textContent = "Your payment details have been uploaded successfully!";
-        document.getElementById("message").classList.add("show");
+        // Display success message
+        messageDiv.textContent = "Your payment has been uploaded successfully!";
+        messageDiv.style.color = "green";
 
-        // Clear the input fields
-        document.getElementById("userName").value = '';
-        document.getElementById("paymentScreenshot").value = '';
+        // Clear the form
+        document.getElementById("name").value = '';
+        document.getElementById("screenshot").value = '';
       };
 
-      reader.readAsDataURL(paymentScreenshot);
+      reader.readAsDataURL(screenshotFile); // Convert image file to base64 format
     });
   </script>
 
