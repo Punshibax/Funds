@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Upload</title>
+  <title>User Upload & UPI Payment</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -21,7 +21,7 @@
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
+      max-width: 500px;
       width: 100%;
     }
 
@@ -36,7 +36,7 @@
       margin-bottom: 20px;
     }
 
-    input[type="text"], input[type="file"] {
+    input[type="text"], input[type="file"], input[type="number"] {
       width: calc(100% - 20px);
       padding: 10px;
       margin: 10px 0;
@@ -63,6 +63,14 @@
       background: #45a049;
     }
 
+    .qr-section {
+      margin: 20px 0;
+    }
+
+    .qr-code {
+      margin-bottom: 10px;
+    }
+
     .message {
       font-weight: bold;
       margin-top: 10px;
@@ -73,15 +81,30 @@
 <body>
 
   <div class="container">
-    <h1>Upload Payment Screenshot</h1>
+    <h1>User Payment & Upload</h1>
 
+    <!-- QR Code Section -->
     <div class="form-group">
-      <label for="name">Name:</label>
+      <label for="amount">Enter Amount (₹):</label>
+      <input type="number" id="amount" placeholder="Enter amount" min="1">
+    </div>
+    <button id="generateQRButton" class="btn">Generate QR Code</button>
+
+    <div class="qr-section">
+      <div id="qrCode" class="qr-code"></div>
+      <p id="qrMessage" style="display: none;">Scan to Pay</p>
+    </div>
+
+    <button id="payNowButton" class="btn" style="display: none;">Pay Now</button>
+
+    <!-- User Info Upload Section -->
+    <div class="form-group">
+      <label for="name">Enter Your Name:</label>
       <input type="text" id="name" placeholder="Enter your name">
     </div>
 
     <div class="form-group">
-      <label for="screenshot">Payment Screenshot:</label>
+      <label for="screenshot">Upload Payment Screenshot:</label>
       <input type="file" id="screenshot" accept="image/*">
     </div>
 
@@ -89,7 +112,53 @@
     <div id="message" class="message"></div>
   </div>
 
+  <!-- Include qrcode.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
+    const upiID = "punshibai@fam"; // Fixed UPI ID
+
+    // Generate QR Code function
+    function generateQR() {
+      let amount = document.getElementById("amount").value;
+      const qrCodeDiv = document.getElementById("qrCode");
+      const qrMessage = document.getElementById("qrMessage");
+      const payNowButton = document.getElementById("payNowButton");
+
+      qrCodeDiv.innerHTML = ""; // Clear previous QR Code
+
+      if (!amount || amount <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+      }
+
+      // Format the amount to two decimal places
+      amount = parseFloat(amount).toFixed(2);
+
+      // Generate UPI URL with additional parameters
+      const transactionID = `TXN${Date.now()}`; // Unique transaction ID
+      const upiURL = `upi://pay?pa=${upiID}&pn=PunshiOfficialStore&am=${amount}&cu=INR&tr=${transactionID}&tn=Payment`;
+
+      try {
+        new QRCode(qrCodeDiv, {
+          text: upiURL,
+          width: 200,
+          height: 200,
+        });
+
+        qrMessage.style.display = "block";
+        payNowButton.style.display = "block";
+
+        // Update Pay Now button to redirect to UPI link
+        payNowButton.onclick = () => {
+          window.location.href = upiURL;
+        };
+      } catch (error) {
+        console.error("QR Code generation failed:", error);
+        alert("Failed to generate QR code. Please try again later.");
+      }
+    }
+
+    // Upload Screenshot and Name function
     document.getElementById("uploadButton").addEventListener("click", function() {
       const name = document.getElementById("name").value;
       const screenshotFile = document.getElementById("screenshot").files[0];
@@ -127,6 +196,9 @@
 
       reader.readAsDataURL(screenshotFile); // Convert image file to base64 format
     });
+
+    // Event Listener for Generate QR Button
+    document.getElementById("generateQRButton").addEventListener("click", generateQR);
   </script>
 
 </body>
