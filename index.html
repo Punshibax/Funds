@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UPI Payment & Upload Screenshot</title>
+  <title>User Payment Upload</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,7 +18,6 @@
     }
 
     .container {
-      text-align: center;
       background: #fff;
       padding: 20px;
       border-radius: 10px;
@@ -67,55 +66,71 @@
     .message {
       font-weight: bold;
       margin-top: 10px;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .message.show {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>Upload Your Payment Screenshot</h1>
+    <h1>Upload Your Payment Details</h1>
 
     <div class="form-group">
-      <label for="username">Enter Your Name:</label>
-      <input type="text" id="username" placeholder="Enter your name">
+      <label for="userName">Enter Your Name:</label>
+      <input type="text" id="userName" placeholder="Enter your name">
     </div>
 
     <div class="form-group">
-      <label for="screenshot">Upload Payment Screenshot:</label>
-      <input type="file" id="screenshot" accept="image/*">
+      <label for="paymentScreenshot">Upload Your Payment Screenshot:</label>
+      <input type="file" id="paymentScreenshot" accept="image/*">
     </div>
 
-    <button id="submitButton" class="btn">Submit</button>
-
-    <div class="message" id="message" style="display: none;"></div>
+    <button id="uploadButton" class="btn">Upload</button>
+    <div id="message" class="message"></div>
   </div>
 
   <script>
-    document.getElementById("submitButton").addEventListener("click", function() {
-      const username = document.getElementById("username").value;
-      const screenshot = document.getElementById("screenshot").files[0];
+    document.getElementById("uploadButton").addEventListener("click", function() {
+      const userName = document.getElementById("userName").value;
+      const paymentScreenshot = document.getElementById("paymentScreenshot").files[0];
 
-      if (!username || !screenshot) {
-        alert("Please provide both your name and screenshot.");
+      if (!userName || !paymentScreenshot) {
+        document.getElementById("message").textContent = "Please provide both your name and payment screenshot.";
+        document.getElementById("message").classList.add("show");
         return;
       }
 
-      // Save data to localStorage (simulating a backend database)
-      const userData = {
-        name: username,
-        screenshot: URL.createObjectURL(screenshot),
+      // Convert the screenshot to base64 to store in localStorage (for demo purposes)
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const screenshotDataUrl = event.target.result;
+
+        // Store the user data in localStorage
+        const users = JSON.parse(localStorage.getItem("users")) || [];
+        users.push({
+          name: userName,
+          screenshot: screenshotDataUrl
+        });
+
+        localStorage.setItem("users", JSON.stringify(users));
+
+        // Show success message
+        document.getElementById("message").textContent = "Your payment details have been uploaded successfully!";
+        document.getElementById("message").classList.add("show");
+
+        // Clear the input fields
+        document.getElementById("userName").value = '';
+        document.getElementById("paymentScreenshot").value = '';
       };
 
-      let users = JSON.parse(localStorage.getItem("users")) || [];
-      users.push(userData);
-      localStorage.setItem("users", JSON.stringify(users));
-
-      document.getElementById("message").innerText = "Your payment details have been uploaded successfully!";
-      document.getElementById("message").style.display = "block";
-
-      // Clear the form
-      document.getElementById("username").value = "";
-      document.getElementById("screenshot").value = "";
+      reader.readAsDataURL(paymentScreenshot);
     });
   </script>
 
