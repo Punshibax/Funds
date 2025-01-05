@@ -53,11 +53,6 @@
     .btn:hover {
       background-color: #45a049;
     }
-    .message {
-      font-weight: bold;
-      color: green;
-      margin-top: 20px;
-    }
   </style>
 </head>
 <body>
@@ -66,7 +61,6 @@
     <h1>Admin Dashboard</h1>
 
     <button id="reloadButton" class="btn">Reload Payment Details</button>
-    <div id="message" class="message"></div>
 
     <table id="paymentsTable">
       <thead>
@@ -83,36 +77,32 @@
   </div>
 
   <script>
-    // Function to load the payment details from localStorage and populate the table
+    // Function to load payments from the server (mocking a fetch here)
     function loadPayments() {
       const paymentsTable = document.getElementById("paymentsTable").getElementsByTagName("tbody")[0];
-      const messageDiv = document.getElementById("message");
 
-      // Get payments from localStorage
-      const payments = JSON.parse(localStorage.getItem("payments")) || [];
+      // Get payments from server (mocking a fetch response here)
+      fetch('/payments')  // Assuming the server sends this data back
+        .then(response => response.json())
+        .then(payments => {
+          // Clear the existing rows
+          paymentsTable.innerHTML = '';
 
-      if (payments.length === 0) {
-        messageDiv.textContent = "No payments have been submitted yet.";
-        messageDiv.style.color = "red";
-      } else {
-        messageDiv.textContent = "List of submitted payments:";
-        messageDiv.style.color = "green";
-        
-        // Clear the existing rows
-        paymentsTable.innerHTML = '';
+          // Add each payment to the table
+          payments.forEach(payment => {
+            const row = paymentsTable.insertRow();
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+            const cell3 = row.insertCell(2);
 
-        // Add each payment to the table
-        payments.forEach(payment => {
-          const row = paymentsTable.insertRow();
-          const cell1 = row.insertCell(0);
-          const cell2 = row.insertCell(1);
-          const cell3 = row.insertCell(2);
-
-          cell1.textContent = payment.name;
-          cell2.textContent = payment.transactionId;
-          cell3.textContent = payment.amount;
+            cell1.textContent = payment.name;
+            cell2.textContent = payment.transactionId;
+            cell3.textContent = payment.amount;
+          });
+        })
+        .catch(error => {
+          console.error("Error loading payments:", error);
         });
-      }
     }
 
     // Reload the table when the button is clicked
