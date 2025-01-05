@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #4CAF50;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .navbar h1 {
+      color: white;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .button {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .button:hover {
+      background-color: #e53935;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #777;
+    }
+
+    .logout-btn {
+      background-color: #f44336;
+      color: white;
+      padding: 10px;
+      cursor: pointer;
+      border: none;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    .logout-btn:hover {
+      background-color: #e53935;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <h1>Admin Dashboard</h1>
+  </div>
+
+  <div class="container">
+    <button class="logout-btn" onclick="logout()">Logout</button>
+
+    <h2>User Payments</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Payment Screenshot</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <!-- User data will be dynamically inserted here -->
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <p>Made by <b>Punshi Official Store</b></p>
+    </div>
+  </div>
+
+  <script>
+    // Check if the admin is logged in
+    if (!localStorage.getItem("adminLoggedIn")) {
+      window.location.href = "admin-login.html";  // Redirect to login page if not logged in
+    }
+
+    // Function to render the table with user data
+    function renderUserTable() {
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const userTableBody = document.getElementById("userTableBody");
+
+      // Clear the existing table data
+      userTableBody.innerHTML = "";
+
+      users.forEach((user) => {
+        const row = document.createElement("tr");
+        const nameCell = document.createElement("td");
+        const screenshotCell = document.createElement("td");
+
+        nameCell.innerText = user.name;
+
+        const screenshotImage = document.createElement("img");
+        screenshotImage.src = user.screenshot;
+        screenshotImage.alt = "Payment Screenshot";
+        screenshotImage.width = 100;
+        screenshotImage.height = 100;
+
+        screenshotCell.appendChild(screenshotImage);
+
+        row.appendChild(nameCell);
+        row.appendChild(screenshotCell);
+        userTableBody.appendChild(row);
+      });
+    }
+
+    // Run this function to populate the table with user data
+    renderUserTable();
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem("adminLoggedIn"); // Remove the admin login status
+      window.location.href = "admin-login.html"; // Redirect to login page
+    }
+  </script>
+
+</body>
+</html>
