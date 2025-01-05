@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Upload & UPI Payment</title>
+  <title>User Payment Details Upload</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -15,7 +15,6 @@
       align-items: center;
       height: 100vh;
     }
-
     .container {
       background: #fff;
       padding: 20px;
@@ -24,19 +23,16 @@
       max-width: 500px;
       width: 100%;
     }
-
     h1 {
       font-size: 24px;
       margin-bottom: 20px;
       color: #4CAF50;
       text-align: center;
     }
-
     .form-group {
       margin-bottom: 20px;
     }
-
-    input[type="text"], input[type="file"], input[type="number"] {
+    input[type="text"], input[type="number"] {
       width: calc(100% - 20px);
       padding: 10px;
       margin: 10px 0;
@@ -44,7 +40,6 @@
       border-radius: 5px;
       font-size: 16px;
     }
-
     .btn {
       display: block;
       width: 100%;
@@ -58,148 +53,82 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
     .btn:hover {
       background: #45a049;
     }
-
-    .qr-section {
-      margin: 20px 0;
-    }
-
-    .qr-code {
-      margin-bottom: 10px;
-    }
-
     .message {
       font-weight: bold;
       margin-top: 10px;
       color: green;
+    }
+    #qrCodeContainer {
+      margin-top: 20px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>User Payment & Upload</h1>
+    <h1>User Payment Details</h1>
 
-    <!-- QR Code Section -->
-    <div class="form-group">
-      <label for="amount">Enter Amount (₹):</label>
-      <input type="number" id="amount" placeholder="Enter amount" min="1">
-    </div>
-    <button id="generateQRButton" class="btn">Generate QR Code</button>
-
-    <div class="qr-section">
-      <div id="qrCode" class="qr-code"></div>
-      <p id="qrMessage" style="display: none;">Scan to Pay</p>
-    </div>
-
-    <button id="payNowButton" class="btn" style="display: none;">Pay Now</button>
-
-    <!-- User Info Upload Section -->
     <div class="form-group">
       <label for="name">Enter Your Name:</label>
       <input type="text" id="name" placeholder="Enter your name">
     </div>
 
     <div class="form-group">
-      <label for="screenshot">Upload Payment Screenshot:</label>
-      <input type="file" id="screenshot" accept="image/*">
+      <label for="transactionId">Enter Transaction ID:</label>
+      <input type="text" id="transactionId" placeholder="Enter transaction ID">
     </div>
 
-    <button id="uploadButton" class="btn">Upload</button>
+    <div class="form-group">
+      <label for="amount">Enter Amount (₹):</label>
+      <input type="number" id="amount" placeholder="Enter amount" min="1">
+    </div>
+
+    <button id="uploadButton" class="btn">Submit Payment Details</button>
     <div id="message" class="message"></div>
+
+    <div id="qrCodeContainer">
+      <h2>Scan to Pay</h2>
+      <img id="qrCode" src="https://i.ibb.co/1GNW5xF/upi-1733397970158.png" alt="QR Code" width="200">
+      <br>
+      <button id="payNow" class="btn">Pay Now</button>
+    </div>
   </div>
 
-  <!-- Include qrcode.js library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode"></script>
+
   <script>
-    const upiID = "punshibai@fam"; // Fixed UPI ID
-
-    // Generate QR Code function
-    function generateQR() {
-      let amount = document.getElementById("amount").value;
-      const qrCodeDiv = document.getElementById("qrCode");
-      const qrMessage = document.getElementById("qrMessage");
-      const payNowButton = document.getElementById("payNowButton");
-
-      qrCodeDiv.innerHTML = ""; // Clear previous QR Code
-
-      if (!amount || amount <= 0) {
-        alert("Please enter a valid amount.");
-        return;
-      }
-
-      // Format the amount to two decimal places
-      amount = parseFloat(amount).toFixed(2);
-
-      // Generate UPI URL with additional parameters
-      const transactionID = `TXN${Date.now()}`; // Unique transaction ID
-      const upiURL = `upi://pay?pa=${upiID}&pn=PunshiOfficialStore&am=${amount}&cu=INR&tr=${transactionID}&tn=Payment`;
-
-      try {
-        new QRCode(qrCodeDiv, {
-          text: upiURL,
-          width: 200,
-          height: 200,
-        });
-
-        qrMessage.style.display = "block";
-        payNowButton.style.display = "block";
-
-        // Update Pay Now button to redirect to UPI link
-        payNowButton.onclick = () => {
-          window.location.href = upiURL;
-        };
-      } catch (error) {
-        console.error("QR Code generation failed:", error);
-        alert("Failed to generate QR code. Please try again later.");
-      }
-    }
-
-    // Upload Screenshot and Name function
     document.getElementById("uploadButton").addEventListener("click", function() {
       const name = document.getElementById("name").value;
-      const screenshotFile = document.getElementById("screenshot").files[0];
+      const transactionId = document.getElementById("transactionId").value;
+      const amount = document.getElementById("amount").value;
       const messageDiv = document.getElementById("message");
 
-      if (!name || !screenshotFile) {
-        messageDiv.textContent = "Please enter your name and upload a screenshot.";
+      if (!name || !transactionId || !amount) {
+        messageDiv.textContent = "Please fill in all fields.";
         messageDiv.style.color = "red";
         return;
       }
 
-      const reader = new FileReader();
+      const paymentDetails = { name: name, transactionId: transactionId, amount: amount };
+      let payments = JSON.parse(localStorage.getItem("payments")) || [];
+      payments.push(paymentDetails);
+      localStorage.setItem("payments", JSON.stringify(payments));
 
-      reader.onload = function(e) {
-        const screenshotData = e.target.result;
+      messageDiv.textContent = "Your payment details have been submitted successfully!";
+      messageDiv.style.color = "green";
 
-        // Store the uploaded name and screenshot in localStorage
-        const userData = {
-          name: name,
-          screenshot: screenshotData,
-          ip: window.location.hostname // Capture IP address (or use other method)
-        };
-
-        let users = JSON.parse(localStorage.getItem("users")) || [];
-        users.push(userData);
-        localStorage.setItem("users", JSON.stringify(users));
-
-        // Display success message
-        messageDiv.textContent = "Your payment has been uploaded successfully!";
-        messageDiv.style.color = "green";
-
-        // Clear the form
-        document.getElementById("name").value = '';
-        document.getElementById("screenshot").value = '';
-      };
-
-      reader.readAsDataURL(screenshotFile); // Convert image file to base64 format
+      document.getElementById("name").value = '';
+      document.getElementById("transactionId").value = '';
+      document.getElementById("amount").value = '';
     });
 
-    // Event Listener for Generate QR Button
-    document.getElementById("generateQRButton").addEventListener("click", generateQR);
+    document.getElementById("payNow").addEventListener("click", function() {
+      window.location.href = "upi://pay?pa=nandokh068@oksbi&pn=YourName&mc=YourMerchantCode&tid=TransactionID&am=Amount&tn=PaymentDescription";
+    });
   </script>
 
 </body>
