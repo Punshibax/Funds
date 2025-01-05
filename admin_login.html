@@ -8,80 +8,80 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
     }
 
-    .container {
+    .login-container {
       background: #fff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
-      width: 100%;
+      width: 300px;
     }
 
     h1 {
       font-size: 24px;
-      margin-bottom: 20px;
       color: #4CAF50;
       text-align: center;
-    }
-
-    .form-group {
       margin-bottom: 20px;
     }
 
-    input[type="text"], input[type="password"] {
-      width: calc(100% - 20px);
+    input {
+      width: 100%;
       padding: 10px;
       margin: 10px 0;
       border: 1px solid #ddd;
       border-radius: 5px;
-      font-size: 16px;
     }
 
-    .btn {
-      display: block;
+    button {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
-      font-size: 16px;
-      color: #fff;
-      background: #4CAF50;
+      background-color: #4CAF50;
+      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      font-size: 16px;
     }
 
-    .btn:hover {
-      background: #45a049;
+    button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="login-container">
     <h1>Admin Login</h1>
-    <form action="admin_panel.php" method="post">
-      <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-      </div>
-
-      <button type="submit" class="btn">Login</button>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Login</button>
     </form>
   </div>
+
+  <script>
+    const correctUsername = "admin";  // Set your username
+    const correctPassword = "admin12345";  // Set your new password
+
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      if (username === correctUsername && password === correctPassword) {
+        window.location.href = "admin_dashboard.html";  // Redirect to Admin Dashboard
+      } else {
+        alert("Invalid username or password.");
+      }
+    });
+  </script>
 
 </body>
 </html>
