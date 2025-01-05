@@ -69,9 +69,6 @@
 
     .qr-code {
       margin-bottom: 10px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
     }
 
     .message {
@@ -178,10 +175,14 @@
       reader.onload = function(e) {
         const screenshotData = e.target.result;
 
-        // Store the uploaded name and screenshot in localStorage
+        // Get the user's IP address (a placeholder for now)
+        const userIP = 'Not Available'; // Use an API if needed to fetch real IP
+
+        // Store the uploaded name, screenshot, and IP in localStorage
         const userData = {
           name: name,
-          screenshot: screenshotData
+          screenshot: screenshotData,
+          ip: userIP,
         };
 
         let users = JSON.parse(localStorage.getItem("users")) || [];
