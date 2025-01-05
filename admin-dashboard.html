@@ -13,82 +13,59 @@
     }
 
     .container {
+      width: 80%;
+      margin: 50px auto;
       background: #fff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      max-width: 800px;
-      width: 100%;
-      margin: 50px auto;
     }
 
     h1 {
-      font-size: 24px;
-      color: #4CAF50;
       text-align: center;
+      color: #4CAF50;
     }
 
-    .user-submission {
-      margin: 15px 0;
-      padding: 15px;
-      background: #f1f1f1;
-      border-radius: 5px;
+    .user-list {
+      margin-top: 30px;
+    }
+
+    .user-item {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
     }
 
-    .user-info {
-      flex: 1;
-      padding-right: 20px;
-    }
-
-    .user-info h4 {
-      margin: 0;
-      color: #333;
-      font-size: 18px;
-    }
-
-    .user-info p {
-      margin: 5px 0;
-      color: #555;
-      font-size: 14px;
-    }
-
-    .user-info .screenshot {
-      margin-top: 10px;
-    }
-
-    .user-submission img {
-      max-width: 200px;
-      max-height: 200px;
+    .user-item img {
+      max-width: 150px;
+      max-height: 150px;
+      margin-right: 20px;
       border-radius: 5px;
-      cursor: pointer;
     }
 
-    .user-submission img:hover {
-      transform: scale(1.1);
-      transition: transform 0.3s ease;
+    .user-item .user-details {
+      flex-grow: 1;
+    }
+
+    .user-item .user-details p {
+      margin: 5px 0;
     }
 
     .btn {
-      padding: 10px;
-      font-size: 16px;
+      padding: 10px 20px;
+      margin: 20px 0;
+      background-color: #4CAF50;
       color: #fff;
-      background: #4CAF50;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin: 5px;
+      font-size: 16px;
     }
 
     .btn:hover {
-      background: #45a049;
-    }
-
-    .action-btns {
-      text-align: center;
-      margin-top: 20px;
+      background-color: #45a049;
     }
   </style>
 </head>
@@ -97,69 +74,69 @@
   <div class="container">
     <h1>Admin Dashboard</h1>
 
-    <div id="userList"></div>
-
-    <div class="action-btns">
-      <button class="btn" id="clearDataButton">Clear All Data</button>
-      <button class="btn" id="exportDataButton">Export Data</button>
-      <button class="btn" onclick="logout()">Logout</button>
+    <div class="user-list" id="userList">
+      <!-- User submissions will be displayed here -->
     </div>
+
+    <button class="btn" onclick="clearAllData()">Clear All Data</button>
+    <button class="btn" onclick="exportUserData()">Export User Data</button>
   </div>
 
   <script>
-    // Function to display user submissions from localStorage
-    window.onload = function() {
+    // Function to load and display user data from localStorage
+    function loadUserData() {
       const users = JSON.parse(localStorage.getItem("users")) || [];
+
       const userListDiv = document.getElementById("userList");
+      userListDiv.innerHTML = ''; // Clear the existing list
 
-      // Loop through users and display their details
       users.forEach((user, index) => {
-        const userDiv = document.createElement("div");
-        userDiv.classList.add("user-submission");
+        const userItem = document.createElement("div");
+        userItem.classList.add("user-item");
 
-        userDiv.innerHTML = `
-          <div class="user-info">
-            <h4>User: ${user.name}</h4>
-            <p><strong>IP Address:</strong> ${user.ip || 'Not Available'}</p>
-            <p><strong>Screenshot:</strong></p>
-            <div class="screenshot">
-              <img src="${user.screenshot}" alt="Screenshot" onclick="viewImage('${user.screenshot}')">
-            </div>
-          </div>
-        `;
+        const userImage = document.createElement("img");
+        userImage.src = user.screenshot; // Set the screenshot as image source
 
-        userListDiv.appendChild(userDiv);
+        const userDetails = document.createElement("div");
+        userDetails.classList.add("user-details");
+
+        const userName = document.createElement("p");
+        userName.textContent = `Name: ${user.name}`;
+
+        const userIp = document.createElement("p");
+        userIp.textContent = `IP: ${user.ip}`;
+
+        userDetails.appendChild(userName);
+        userDetails.appendChild(userIp);
+
+        userItem.appendChild(userImage);
+        userItem.appendChild(userDetails);
+        userListDiv.appendChild(userItem);
       });
-    };
+    }
 
-    // Function to view the larger version of the screenshot
-    function viewImage(imageUrl) {
-      const imageWindow = window.open();
-      imageWindow.document.write(`<img src="${imageUrl}" style="width: 100%; height: auto;">`);
+    // Load user data when the page loads
+    window.onload = function() {
+      loadUserData();
     }
 
     // Function to clear all data from localStorage
-    document.getElementById("clearDataButton").addEventListener("click", function() {
-      localStorage.removeItem("users");
-      alert("All data cleared!");
-      location.reload();
-    });
+    function clearAllData() {
+      if (confirm("Are you sure you want to clear all user data?")) {
+        localStorage.removeItem("users");
+        loadUserData(); // Reload the user list
+      }
+    }
 
-    // Function to export data (you can implement a more complex export logic if needed)
-    document.getElementById("exportDataButton").addEventListener("click", function() {
+    // Function to export user data as JSON
+    function exportUserData() {
       const users = JSON.parse(localStorage.getItem("users")) || [];
-      const blob = new Blob([JSON.stringify(users, null, 2)], { type: "application/json" });
+      const blob = new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = "user_data.json";
       a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    // Logout function (redirect to login page)
-    function logout() {
-      window.location.href = "index.html";  // Redirect to the index page or login page
     }
   </script>
 
