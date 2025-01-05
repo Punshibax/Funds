@@ -30,20 +30,45 @@
 
     .user-submission {
       margin: 15px 0;
-      padding: 10px;
+      padding: 15px;
       background: #f1f1f1;
       border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .user-submission h4 {
+    .user-info {
+      flex: 1;
+      padding-right: 20px;
+    }
+
+    .user-info h4 {
       margin: 0;
       color: #333;
+      font-size: 18px;
+    }
+
+    .user-info p {
+      margin: 5px 0;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .user-info .screenshot {
+      margin-top: 10px;
     }
 
     .user-submission img {
-      max-width: 100px;
-      max-height: 100px;
+      max-width: 200px;
+      max-height: 200px;
       border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .user-submission img:hover {
+      transform: scale(1.1);
+      transition: transform 0.3s ease;
     }
 
     .btn {
@@ -63,6 +88,7 @@
 
     .action-btns {
       text-align: center;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -92,14 +118,25 @@
         userDiv.classList.add("user-submission");
 
         userDiv.innerHTML = `
-          <h4>User: ${user.name}</h4>
-          <img src="${user.screenshot}" alt="Screenshot">
-          <p>Screenshot uploaded successfully!</p>
+          <div class="user-info">
+            <h4>User: ${user.name}</h4>
+            <p><strong>IP Address:</strong> ${user.ip || 'Not Available'}</p>
+            <p><strong>Screenshot:</strong></p>
+            <div class="screenshot">
+              <img src="${user.screenshot}" alt="Screenshot" onclick="viewImage('${user.screenshot}')">
+            </div>
+          </div>
         `;
 
         userListDiv.appendChild(userDiv);
       });
     };
+
+    // Function to view the larger version of the screenshot
+    function viewImage(imageUrl) {
+      const imageWindow = window.open();
+      imageWindow.document.write(`<img src="${imageUrl}" style="width: 100%; height: auto;">`);
+    }
 
     // Function to clear all data from localStorage
     document.getElementById("clearDataButton").addEventListener("click", function() {
