@@ -11,133 +11,115 @@
       margin: 0;
       padding: 0;
     }
-
-    .dashboard-container {
+    .container {
       background: #fff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
       margin: 50px auto;
-      max-width: 900px;
     }
-
     h1 {
       color: #4CAF50;
       text-align: center;
     }
-
-    .user-list {
+    table {
+      width: 100%;
+      border-collapse: collapse;
       margin-top: 20px;
     }
-
-    .user-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    th, td {
       padding: 10px;
-      margin-bottom: 10px;
+      text-align: left;
       border: 1px solid #ddd;
-      border-radius: 5px;
+    }
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+    td {
       background-color: #f9f9f9;
     }
-
-    .user-item img {
-      max-width: 100px;
-      max-height: 100px;
-      border-radius: 5px;
-    }
-
-    .user-item .name {
-      font-weight: bold;
-    }
-
-    .admin-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    button {
+    .btn {
       padding: 10px;
       background-color: #4CAF50;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s;
     }
-
-    button:hover {
+    .btn:hover {
       background-color: #45a049;
     }
-
-    .logout-btn {
-      background-color: #f44336;
+    .message {
+      font-weight: bold;
+      color: green;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
 
-  <div class="dashboard-container">
+  <div class="container">
     <h1>Admin Dashboard</h1>
 
-    <div id="userList" class="user-list"></div>
+    <button id="reloadButton" class="btn">Reload Payment Details</button>
+    <div id="message" class="message"></div>
 
-    <div class="admin-buttons">
-      <button onclick="clearData()">Clear All Data</button>
-      <button onclick="exportData()">Export User Data</button>
-      <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
+    <table id="paymentsTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Transaction ID</th>
+          <th>Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- User payment details will be dynamically added here -->
+      </tbody>
+    </table>
   </div>
 
   <script>
-    // Simulate retrieving user data from localStorage
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    // Function to load the payment details from localStorage and populate the table
+    function loadPayments() {
+      const paymentsTable = document.getElementById("paymentsTable").getElementsByTagName("tbody")[0];
+      const messageDiv = document.getElementById("message");
 
-    // Display user data
-    function displayUsers() {
-      const userList = document.getElementById("userList");
-      userList.innerHTML = '';  // Clear previous data
+      // Get payments from localStorage
+      const payments = JSON.parse(localStorage.getItem("payments")) || [];
 
-      users.forEach((user, index) => {
-        const userItem = document.createElement('div');
-        userItem.classList.add('user-item');
+      if (payments.length === 0) {
+        messageDiv.textContent = "No payments have been submitted yet.";
+        messageDiv.style.color = "red";
+      } else {
+        messageDiv.textContent = "List of submitted payments:";
+        messageDiv.style.color = "green";
         
-        userItem.innerHTML = `
-          <div>
-            <span class="name">${user.name}</span><br>
-            <span class="ip">IP: ${user.ip}</span>
-          </div>
-          <img src="${user.screenshot}" alt="User Screenshot">
-        `;
-        
-        userList.appendChild(userItem);
-      });
+        // Clear the existing rows
+        paymentsTable.innerHTML = '';
+
+        // Add each payment to the table
+        payments.forEach(payment => {
+          const row = paymentsTable.insertRow();
+          const cell1 = row.insertCell(0);
+          const cell2 = row.insertCell(1);
+          const cell3 = row.insertCell(2);
+
+          cell1.textContent = payment.name;
+          cell2.textContent = payment.transactionId;
+          cell3.textContent = payment.amount;
+        });
+      }
     }
 
-    // Clear user data
-    function clearData() {
-      localStorage.removeItem("users");
-      displayUsers();  // Refresh list
-    }
+    // Reload the table when the button is clicked
+    document.getElementById("reloadButton").addEventListener("click", loadPayments);
 
-    // Export user data (mock function)
-    function exportData() {
-      const userData = JSON.stringify(users, null, 2);
-      const blob = new Blob([userData], { type: "application/json" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "user_data.json";
-      link.click();
-    }
-
-    // Logout function
-    function logout() {
-      window.location.href = "admin_login.html";
-    }
-
-    // Initial call to display users
-    displayUsers();
+    // Load payments when the page loads
+    window.onload = loadPayments;
   </script>
 
 </body>
