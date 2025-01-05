@@ -3,140 +3,307 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      background-color: #f4f4f4;
       margin: 0;
       padding: 0;
     }
 
     .navbar {
-      background-color: #4CAF50;
-      padding: 10px;
+      background: #4CAF50;
+      color: #fff;
+      padding: 15px;
       text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .navbar h1 {
-      color: white;
+    .navbar h2 {
+      margin: 0;
     }
 
     .container {
       padding: 20px;
-      max-width: 1200px;
-      margin: 0 auto;
     }
 
-    table {
+    .user {
+      background: #fff;
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .user-info {
+      display: flex;
+      justify-content: space-between;
       width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
+      margin-bottom: 15px;
     }
 
-    th, td {
-      padding: 12px;
-      text-align: center;
-      border: 1px solid #ddd;
+    .user-info h4 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
     }
 
-    th {
-      background-color: #4CAF50;
+    .user-info button {
+      padding: 10px 20px;
+      background: #4CAF50;
       color: white;
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 14px;
-      color: #777;
-    }
-
-    .logout-btn {
-      background-color: #f44336;
-      color: white;
-      padding: 10px;
-      cursor: pointer;
       border: none;
-      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .user-info button:hover {
+      background: #45a049;
+    }
+
+    .user-screenshot {
+      margin-top: 10px;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .logout-btn, .admin-action-btn {
+      padding: 10px 20px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 14px;
+    }
+
+    .logout-btn:hover, .admin-action-btn:hover {
+      background: #1976D2;
+    }
+
+    .user-list {
+      margin-top: 20px;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background: #4CAF50;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h2 {
+      margin: 0;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .user {
+      background: #fff;
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .user-info {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .user-info h4 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .user-info button {
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .user-info button:hover {
+      background: #45a049;
+    }
+
+    .user-screenshot {
+      margin-top: 10px;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .logout-btn, .admin-action-btn {
+      padding: 10px 20px;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 14px;
+    }
+
+    .logout-btn:hover, .admin-action-btn:hover {
+      background: #1976D2;
+    }
+
+    .user-list {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+
+    .admin-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       margin-top: 20px;
     }
 
-    .logout-btn:hover {
-      background-color: #e53935;
+    /* Responsive Grid for User List */
+    @media (max-width: 768px) {
+      .user-list {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .user-list {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="navbar">
-    <h1>Admin Dashboard</h1>
+    <h2>Admin Dashboard</h2>
   </div>
 
   <div class="container">
+    <h3>User Submissions</h3>
+    <div id="userList" class="user-list"></div>
+  </div>
+
+  <div class="admin-actions">
     <button class="logout-btn" onclick="logout()">Logout</button>
-
-    <h2>User Payments</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Payment Screenshot</th>
-        </tr>
-      </thead>
-      <tbody id="userTableBody">
-        <!-- User data will be dynamically inserted here -->
-      </tbody>
-    </table>
-
-    <div class="footer">
-      <p>Made by <b>Punshi Official Store</b></p>
-    </div>
+    <button class="admin-action-btn" onclick="clearAllData()">Clear All Data</button>
+    <button class="admin-action-btn" onclick="exportUserData()">Export User Data</button>
   </div>
 
   <script>
-    // Check if the admin is logged in
-    if (!localStorage.getItem("adminLoggedIn")) {
-      window.location.href = "admin-login.html";  // Redirect to login page if not logged in
-    }
-
-    // Function to render the table with user data
-    function renderUserTable() {
+    // Function to fetch user data from localStorage
+    function loadUserData() {
       const users = JSON.parse(localStorage.getItem("users")) || [];
-      const userTableBody = document.getElementById("userTableBody");
 
-      // Clear the existing table data
-      userTableBody.innerHTML = "";
+      const userListDiv = document.getElementById("userList");
 
-      users.forEach((user) => {
-        const row = document.createElement("tr");
-        const nameCell = document.createElement("td");
-        const screenshotCell = document.createElement("td");
+      if (users.length === 0) {
+        userListDiv.innerHTML = "<p>No user submissions yet.</p>";
+        return;
+      }
 
-        nameCell.innerText = user.name;
+      // Display each user's name and uploaded screenshot
+      users.forEach(user => {
+        const userDiv = document.createElement("div");
+        userDiv.classList.add("user");
 
-        const screenshotImage = document.createElement("img");
-        screenshotImage.src = user.screenshot;
-        screenshotImage.alt = "Payment Screenshot";
-        screenshotImage.width = 100;
-        screenshotImage.height = 100;
+        userDiv.innerHTML = `
+          <div class="user-info">
+            <h4>${user.name}</h4>
+            <button onclick="viewScreenshot('${user.screenshot}')">View Screenshot</button>
+          </div>
+          <img class="user-screenshot" src="${user.screenshot}" alt="User Screenshot">
+        `;
 
-        screenshotCell.appendChild(screenshotImage);
-
-        row.appendChild(nameCell);
-        row.appendChild(screenshotCell);
-        userTableBody.appendChild(row);
+        userListDiv.appendChild(userDiv);
       });
     }
 
-    // Run this function to populate the table with user data
-    renderUserTable();
+    // Function to view the screenshot in a larger size
+    function viewScreenshot(screenshotData) {
+      const imgWindow = window.open();
+      imgWindow.document.write('<img src="' + screenshotData + '" style="width: 100%; height: auto;" />');
+    }
 
     // Logout function
     function logout() {
-      localStorage.removeItem("adminLoggedIn"); // Remove the admin login status
-      window.location.href = "admin-login.html"; // Redirect to login page
+      window.location.href = "admin-login.html";
     }
+
+    // Function to clear all user data
+    function clearAllData() {
+      localStorage.removeItem("users");
+      loadUserData();
+    }
+
+    // Function to export user data (as JSON file)
+    function exportUserData() {
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+
+      if (users.length === 0) {
+        alert("No user data to export.");
+        return;
+      }
+
+      const blob = new Blob([JSON.stringify(users, null, 2)], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "user_data.json";
+      link.click();
+    }
+
+    // Load user data when the page loads
+    window.onload = loadUserData;
   </script>
 
 </body>
